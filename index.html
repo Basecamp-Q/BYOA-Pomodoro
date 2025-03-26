@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pomodoro Timer</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <div class="container">
+        <div class="logo-container">
+            <img src="q-nl-logo.png" alt="Q_NL Logo" id="q-logo">
+        </div>
+        <h1 class="timer-title"><i class="fas fa-apple-alt tomato-icon"></i> pomodoro timer <i class="fas fa-apple-alt tomato-icon"></i></h1>
+        
+        <div class="profiles">
+            <button id="profile-roel" class="profile-btn">Roel</button>
+            <button id="profile-jeroen" class="profile-btn">Jeroen</button>
+            <div id="active-profile">Actief profiel: Geen</div>
+        </div>
+        
+        <div class="timer">
+            <div id="time-display">25:00</div>
+            <div class="progress-container">
+                <div id="progress-bar"></div>
+            </div>
+        </div>
+        
+        <div class="controls">
+            <button id="start-btn">Start</button>
+            <button id="pause-btn">Pauze</button>
+            <button id="reset-btn">Reset</button>
+        </div>
+        
+        <div class="coffee-container">
+            <button id="coffee-btn">Tijd voor Qoffie! ☕</button>
+        </div>
+    </div>
+    
+    <script src="script.js"></script>
+</body>
+</html> 
