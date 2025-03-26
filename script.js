@@ -1,39 +1,18 @@
 // Timer instellingen
 const timerSettings = {
-    pomodoro: 25 * 60, // 25 minuten in seconden
-    shortBreak: 5 * 60, // 5 minuten in seconden
-    longBreak: 15 * 60 // 15 minuten in seconden
-};
-
-// Profielinstellingen
-const profileSettings = {
-    roel: {
-        pomodoro: 25 * 60, // 25 minuten in seconden voor Roel
-        shortBreak: 6 * 60, // 6 minuten in seconden
-        longBreak: 15 * 60, // 15 minuten in seconden
-        containerColor: 'linear-gradient(135deg, #ffffff, #e6eef7)', /* Wit naar lichtblauw */
-        progressBarColor: '#1A2A56' /* Bijgewerkt naar Q-logo blauw */
-    },
-    jeroen: {
-        pomodoro: 25 * 60, // 25 minuten in seconden voor Jeroen
-        shortBreak: 5 * 60, // 5 minuten in seconden
-        longBreak: 15 * 60, // 15 minuten in seconden
-        containerColor: 'linear-gradient(135deg, #ffffff, #e6eef7)', /* Wit naar lichtblauw */
-        progressBarColor: '#1A2A56' /* Bijgewerkt naar Q-logo blauw */
-    }
+    time15: 15 * 60, // 15 minuten in seconden
+    time25: 25 * 60, // 25 minuten in seconden
+    shortBreak: 5 * 60 // 5 minuten in seconden
 };
 
 // Timer status
 let timer = {
-    mode: 'pomodoro',
-    timeLeft: 0, // Standaard op 0 seconden zetten in plaats van timerSettings.pomodoro
+    mode: 'time25', // Standaard 25 minuten
+    timeLeft: 0, // Standaard op 0 seconden zetten
     isRunning: false,
     interval: null,
-    isCoffeeBreak: false // Nieuwe eigenschap om bij te houden of we in koffiepauze zitten
+    isCoffeeBreak: false // Bijhouden of we in koffiepauze zitten
 };
-
-// Actief profiel
-let activeProfile = null;
 
 // DOM elementen selecteren
 const timeDisplay = document.getElementById('time-display');
@@ -42,9 +21,9 @@ const pauseBtn = document.getElementById('pause-btn');
 const resetBtn = document.getElementById('reset-btn');
 const progressBar = document.getElementById('progress-bar');
 const progressContainer = document.querySelector('.progress-container');
-const profileRoelBtn = document.getElementById('profile-roel');
-const profileJeroenBtn = document.getElementById('profile-jeroen');
-const activeProfileDisplay = document.getElementById('active-profile');
+const time15Btn = document.getElementById('time-15');
+const time25Btn = document.getElementById('time-25');
+const activeTimeDisplay = document.getElementById('active-time');
 const container = document.querySelector('.container');
 const coffeeBtn = document.getElementById('coffee-btn');
 
@@ -53,9 +32,36 @@ startBtn.addEventListener('click', startTimer);
 pauseBtn.addEventListener('click', pauseTimer);
 resetBtn.addEventListener('click', resetTimer);
 progressContainer.addEventListener('click', handleProgressBarClick);
-profileRoelBtn.addEventListener('click', () => switchProfile('roel'));
-profileJeroenBtn.addEventListener('click', () => switchProfile('jeroen'));
+time15Btn.addEventListener('click', () => setTimerDuration('time15'));
+time25Btn.addEventListener('click', () => setTimerDuration('time25'));
 coffeeBtn.addEventListener('click', setUpCoffeeBreak);
+
+// Tijdsduur instellen
+function setTimerDuration(duration) {
+    // Huidige timer stoppen
+    pauseTimer();
+    
+    // Timer instellen
+    timer.mode = duration;
+    timer.timeLeft = timerSettings[duration];
+    timer.isCoffeeBreak = false; // Reset koffiepauze status
+    
+    // Visuele updates
+    if (duration === 'time15') {
+        time15Btn.classList.add('active');
+        time25Btn.classList.remove('active');
+        activeTimeDisplay.textContent = "Gekozen tijd: 15 minuten";
+        container.style.background = 'linear-gradient(135deg, #ffffff, #e6eef7)';
+    } else {
+        time15Btn.classList.remove('active');
+        time25Btn.classList.add('active');
+        activeTimeDisplay.textContent = "Gekozen tijd: 25 minuten";
+        container.style.background = 'linear-gradient(135deg, #ffffff, #e6eef7)';
+    }
+    
+    // Timer updaten
+    updateTimer();
+}
 
 // Voortgangsbalk bijwerken
 function updateProgressBar() {
@@ -65,15 +71,11 @@ function updateProgressBar() {
     
     // Als we in koffiepauze zitten, Q-blauw kleur gebruiken
     if (timer.isCoffeeBreak) {
-        progressBar.style.backgroundColor = '#1A2A56'; // Bijgewerkt naar Q-logo blauw
-    }
-    // Anders, als er een actief profiel is, gebruik die kleur
-    else if (activeProfile) {
-        progressBar.style.backgroundColor = profileSettings[activeProfile].progressBarColor;
+        progressBar.style.backgroundColor = '#1A2A56'; // Q-logo blauw
     } 
-    // Anders, gebruik de standaardkleur (Q-logo blauw)
+    // Anders, standaard Q-blauw gebruiken
     else {
-        progressBar.style.backgroundColor = '#1A2A56'; // Bijgewerkt naar Q-logo blauw
+        progressBar.style.backgroundColor = '#1A2A56'; // Q-logo blauw
     }
 }
 
@@ -104,22 +106,17 @@ function updateTimer() {
 
 // Timer starten
 function startTimer() {
-    if (activeProfile === null && !timer.isCoffeeBreak) {
-        alert("Selecteer eerst een profiel of kies voor een Cop koffie!");
+    if (timer.timeLeft === 0 && !timer.isCoffeeBreak) {
+        alert("Kies eerst een tijdsduur of neem een Qoffie pauze!");
         return;
     }
     
     if (!timer.isRunning) {
-        // Alleen starten als er tijd over is
-        if (timer.timeLeft > 0) {
-            timer.isRunning = true;
-            timer.interval = setInterval(() => {
-                timer.timeLeft--;
-                updateTimer();
-            }, 1000);
-        } else {
-            alert("Stel eerst een timer in door een profiel te kiezen!");
-        }
+        timer.isRunning = true;
+        timer.interval = setInterval(() => {
+            timer.timeLeft--;
+            updateTimer();
+        }, 1000);
     }
 }
 
@@ -139,15 +136,6 @@ function resetTimer() {
     if (!timer.isCoffeeBreak) {
         timer.isCoffeeBreak = false;
     }
-    updateTimer();
-}
-
-// Wisselen tussen modes (pomodoro, korte pauze, lange pauze)
-function switchMode(mode) {
-    // Timer stoppen en resetten naar de nieuwe mode
-    pauseTimer();
-    timer.mode = mode;
-    timer.timeLeft = timerSettings[mode];
     updateTimer();
 }
 
@@ -192,38 +180,6 @@ function playAlarmSound() {
     oscillator.stop(audioContext.currentTime + 1);
 }
 
-// Profiel wisselen
-function switchProfile(profile) {
-    // Huidige timer stoppen
-    pauseTimer();
-    
-    // Profiel updaten
-    activeProfile = profile;
-    timer.isCoffeeBreak = false; // Reset koffiepauze status
-    
-    // Visuele updates voor profiel
-    if (profile === 'roel') {
-        profileRoelBtn.classList.add('active');
-        profileJeroenBtn.classList.remove('active');
-        activeProfileDisplay.textContent = "Actief profiel: Roel";
-        container.style.background = profileSettings.roel.containerColor;
-    } else {
-        profileRoelBtn.classList.remove('active');
-        profileJeroenBtn.classList.add('active');
-        activeProfileDisplay.textContent = "Actief profiel: Jeroen";
-        container.style.background = profileSettings.jeroen.containerColor;
-    }
-    
-    // Timer instellingen updaten
-    Object.keys(timerSettings).forEach(key => {
-        timerSettings[key] = profileSettings[profile][key];
-    });
-    
-    // Timer resetten naar nieuwe instellingen
-    timer.timeLeft = timerSettings[timer.mode]; // Nu wordt tijd van profiel ingesteld
-    updateTimer();
-}
-
 // Koffie pauze instellen
 function setUpCoffeeBreak() {
     // Stop de huidige timer
@@ -231,16 +187,16 @@ function setUpCoffeeBreak() {
     
     // Stel de timer in op 5 minuten
     timer.mode = 'shortBreak';
-    timer.timeLeft = 5 * 60; // 5 minuten in seconden
+    timer.timeLeft = timerSettings.shortBreak; // 5 minuten in seconden
     timer.isCoffeeBreak = true; // Markeer als koffiepauze
     
     // Update de timer weergave
     updateTimer();
     
-    // Reset profielknoppen actieve status
-    profileRoelBtn.classList.remove('active');
-    profileJeroenBtn.classList.remove('active');
-    activeProfileDisplay.textContent = "Actief profiel: Qoffie";
+    // Reset tijdknoppen actieve status
+    time15Btn.classList.remove('active');
+    time25Btn.classList.remove('active');
+    activeTimeDisplay.textContent = "Actief profiel: Qoffie";
     
     // Update de container kleur naar een gradient met het Q-logo blauw
     container.style.background = 'linear-gradient(135deg, #ffffff, #1A2A56)';

@@ -225,4 +225,32 @@ button:hover {
 
 #coffee-btn:hover {
     background-color: #111c3b;
+}
+
+.time-options {
+    display: flex;
+    flex-direction: column;
+    margin: 15px 0;
+    gap: 10px;
+}
+
+.time-btn {
+    padding: 10px;
+    border-radius: 5px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    background-color: #1A2A56;
+    color: white;
+}
+
+.time-btn:hover, .time-btn.active {
+    background-color: #111c3b;
+}
+
+#active-time {
+    margin-top: 5px;
+    font-size: 0.9rem;
+    font-style: italic;
+    color: #555;
 } 
