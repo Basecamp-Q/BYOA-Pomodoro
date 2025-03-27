@@ -253,4 +253,17 @@ button:hover {
     font-size: 0.9rem;
     font-style: italic;
     color: #555;
+}
+
+#focus-task {
+    margin-bottom: 15px;
+    color: #1A2A56;
+    font-size: 1.1rem;
+}
+
+.focus-text {
+    padding: 8px;
+    background-color: rgba(26, 42, 86, 0.1);
+    border-radius: 5px;
+    display: inline-block;
 } 

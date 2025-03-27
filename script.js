@@ -11,7 +11,8 @@ let timer = {
     timeLeft: 0, // Standaard op 0 seconden zetten
     isRunning: false,
     interval: null,
-    isCoffeeBreak: false // Bijhouden of we in koffiepauze zitten
+    isCoffeeBreak: false, // Bijhouden of we in koffiepauze zitten
+    focusTask: '' // Nieuwe property voor de focustaak
 };
 
 // DOM elementen selecteren
@@ -26,6 +27,7 @@ const time25Btn = document.getElementById('time-25');
 const activeTimeDisplay = document.getElementById('active-time');
 const container = document.querySelector('.container');
 const coffeeBtn = document.getElementById('coffee-btn');
+const focusTaskElement = document.getElementById('focus-task');
 
 // Event listeners toevoegen
 startBtn.addEventListener('click', startTimer);
@@ -106,16 +108,32 @@ function updateTimer() {
 
 // Timer starten
 function startTimer() {
-    if (timer.timeLeft === 0 && !timer.isCoffeeBreak) {
-        alert("Kies eerst een tijdsduur of neem een Qoffie pauze!");
-        return;
-    }
-    
     if (!timer.isRunning) {
+        // Vraag om focustaak als die er nog niet is en we niet in koffiepauze zitten
+        if (!timer.focusTask && !timer.isCoffeeBreak) {
+            const task = prompt('Waarop wil je focussen tijdens deze sessie?');
+            if (!task) return; // Stop als gebruiker annuleert
+            timer.focusTask = task;
+            focusTaskElement.innerHTML = `<p class="focus-text">Focus taak: ${task}</p>`;
+        }
+        
+        // Controleer of er een tijd is ingesteld
+        if (timer.timeLeft === 0) {
+            timer.timeLeft = timerSettings[timer.mode];
+        }
+        
         timer.isRunning = true;
+        startBtn.textContent = 'Bezig...';
         timer.interval = setInterval(() => {
-            timer.timeLeft--;
-            updateTimer();
+            if (timer.timeLeft > 0) {
+                timer.timeLeft--;
+                updateTimer();
+            }
+            if (timer.timeLeft === 0) {
+                pauseTimer();
+                playAlarmSound();
+                alert(`${timer.mode.charAt(0).toUpperCase() + timer.mode.slice(1)} afgerond!`);
+            }
         }, 1000);
     }
 }
@@ -124,6 +142,7 @@ function startTimer() {
 function pauseTimer() {
     timer.isRunning = false;
     clearInterval(timer.interval);
+    startBtn.textContent = 'Start'; // Zet de tekst terug naar 'Start'
     // Terugzetten van de originele titel
     document.title = "Pomodoro Timer";
 }
@@ -132,11 +151,10 @@ function pauseTimer() {
 function resetTimer() {
     pauseTimer();
     timer.timeLeft = timerSettings[timer.mode];
-    // Als we niet in koffiepauze zijn, reset de isCoffeeBreak vlag
-    if (!timer.isCoffeeBreak) {
-        timer.isCoffeeBreak = false;
-    }
+    timer.focusTask = ''; // Reset de focustaak
+    focusTaskElement.innerHTML = ''; // Verwijder de focustaak tekst
     updateTimer();
+    startBtn.textContent = 'Start';
 }
 
 // Tijd formatteren (seconden naar mm:ss)
@@ -189,6 +207,8 @@ function setUpCoffeeBreak() {
     timer.mode = 'shortBreak';
     timer.timeLeft = timerSettings.shortBreak; // 5 minuten in seconden
     timer.isCoffeeBreak = true; // Markeer als koffiepauze
+    timer.focusTask = ''; // Reset de focustaak
+    focusTaskElement.innerHTML = ''; // Verwijder de focustaak tekst
     
     // Update de timer weergave
     updateTimer();
