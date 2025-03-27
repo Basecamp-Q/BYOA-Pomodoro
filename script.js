@@ -109,15 +109,13 @@ function updateTimer() {
 // Timer starten
 function startTimer() {
     if (!timer.isRunning) {
-        // Vraag om focustaak als die er nog niet is en we niet in koffiepauze zitten
+        // Vervang de prompt met het modale venster
         if (!timer.focusTask && !timer.isCoffeeBreak) {
-            const task = prompt('Waarop wil je focussen tijdens deze sessie?');
-            if (!task) return; // Stop als gebruiker annuleert
-            timer.focusTask = task;
-            focusTaskElement.innerHTML = `<p class="focus-text">Focus taak: ${task}</p>`;
+            showFocusModal();
+            return;
         }
         
-        // Controleer of er een tijd is ingesteld
+        // Rest van de startTimer functie blijft hetzelfde
         if (timer.timeLeft === 0) {
             timer.timeLeft = timerSettings[timer.mode];
         }
@@ -220,6 +218,50 @@ function setUpCoffeeBreak() {
     
     // Update de container kleur naar een gradient met het Q-logo blauw
     container.style.background = 'linear-gradient(135deg, #ffffff, #1A2A56)';
+}
+
+// Nieuwe functies voor het modale venster
+function showFocusModal() {
+    const modal = document.getElementById('focus-modal');
+    const focusInput = document.getElementById('focus-input');
+    const confirmBtn = document.getElementById('confirm-focus');
+    const cancelBtn = document.getElementById('cancel-focus');
+
+    modal.style.display = 'flex';
+    focusInput.focus();
+
+    confirmBtn.onclick = () => {
+        const task = focusInput.value.trim();
+        if (task) {
+            timer.focusTask = task;
+            focusTaskElement.innerHTML = `<p class="focus-text">Focus taak: ${task}</p>`;
+            modal.style.display = 'none';
+            focusInput.value = '';
+            startTimer();
+        }
+    };
+
+    cancelBtn.onclick = () => {
+        modal.style.display = 'none';
+        focusInput.value = '';
+    };
+
+    // Sluit het modale venster als er buiten wordt geklikt
+    modal.onclick = (e) => {
+        if (e.target === modal) {
+            modal.style.display = 'none';
+            focusInput.value = '';
+        }
+    };
+
+    // Enter toets ondersteuning
+    focusInput.onkeyup = (e) => {
+        if (e.key === 'Enter') {
+            confirmBtn.click();
+        } else if (e.key === 'Escape') {
+            cancelBtn.click();
+        }
+    };
 }
 
 // Initialiseer de timer
