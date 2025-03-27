@@ -21,15 +21,21 @@ body {
     text-align: center;
     max-width: 500px;
     width: 90%;
+    margin: 20px auto;
 }
 
 .logo-container {
     margin-bottom: 20px;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
 #q-logo {
-    max-width: 300px;
+    max-width: 100%;
     height: auto;
+    width: 250px;
 }
 
 #coplopers-logo {
@@ -45,6 +51,7 @@ body {
     text-transform: lowercase;
     font-family: 'Poppins', sans-serif;
     letter-spacing: 1px;
+    white-space: nowrap;
 }
 
 h1 {
@@ -341,4 +348,81 @@ button:hover {
 
 #cancel-focus:hover {
     background-color: #d9e3f0;
+}
+
+/* Media queries voor responsive design */
+@media screen and (max-width: 480px) {
+    .container {
+        padding: 20px;
+        margin: 10px;
+        width: calc(100% - 20px);
+    }
+
+    #q-logo {
+        width: 200px;
+    }
+
+    .timer-title {
+        font-size: 1.2rem;
+    }
+
+    #time-display {
+        font-size: 3rem;
+    }
+
+    .time-options {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        align-items: center;
+    }
+
+    .time-btn {
+        width: 100%;
+        max-width: 200px;
+    }
+
+    .controls {
+        display: flex;
+        gap: 10px;
+        justify-content: center;
+        flex-wrap: wrap;
+    }
+
+    .controls button {
+        min-width: 90px;
+    }
+
+    .modal-content {
+        margin: 0 15px;
+        padding: 20px;
+    }
+
+    .modal-buttons {
+        flex-direction: column;
+    }
+
+    .modal-buttons button {
+        width: 100%;
+    }
+
+    #coffee-btn {
+        width: 100%;
+        max-width: 200px;
+    }
+}
+
+/* Extra kleine schermen */
+@media screen and (max-width: 320px) {
+    .timer-title {
+        font-size: 1rem;
+    }
+
+    #time-display {
+        font-size: 2.5rem;
+    }
+
+    .container {
+        padding: 15px;
+    }
 } 
